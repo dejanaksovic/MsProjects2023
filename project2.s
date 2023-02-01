@@ -1,28 +1,48 @@
-DATA SEGMENT
-    array dw 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
-DATA ENDS
+INCLUDE 'EMU8086.INC'
+.MODEL SMALL
+.STACK 100h
+.DATA
+    array db 3, 8, 2, 5, 12, 16, 44, 2, 9, 100
+    
+.CODE
+    MAIN PROC
+        MOV AX, @DATA
+        MOV DS, AX
+        
+        MOV CX, 0
+        MOV CL, 10
 
-CODE SEGMENT
-   mov ax, 9
-   sort:    
-   mov bx, 0;//Counter
-   mov cx, [array+4*(bx)]; //Current checking element 
-   mov dx, [array+4*(bx+1)];//Next element in line
-   cmp cx, dx
-   jl no_swap;
-   ;//Swap
-   mov [array+4*(bx)], dx
-   mov [array+4*(bx+1)], cx
-   
-   no_swap:
-    inc bx
-    cmp bx, ax
-    jg sort
-    
-   dec ax
-   jnz sort
+        LEA SI, array
 
-    
-    
-CODE ENDS
-END
+        
+        MOV BX, 0
+        
+     BUBBLE_SORT:
+        dec CX
+        LEA SI, array
+        CMP CX, SI
+        JLE EXIT
+        
+        SWAP:
+        CMP SI, CX
+        JGE BUBBLE_SORT
+        
+        MOV BL, array[SI]
+        MOV BH, array[SI+1]
+        CMP BL, BH
+        JLE INCREMENT
+        
+        MOV array[SI], BH
+        MOV array[SI+1], BL
+        INC SI
+        
+        JMP SWAP
+        
+        
+     INCREMENT:
+        INC SI
+        JMP SWAP
+     EXIT:
+     LEA SI, array
+
+     END
